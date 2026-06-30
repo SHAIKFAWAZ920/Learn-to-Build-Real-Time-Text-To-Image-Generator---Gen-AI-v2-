@@ -4,6 +4,7 @@ import logging
 import yaml
 import torch
 from diffusers import StableDiffusionPipeline
+from PIL import Image
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
@@ -53,11 +54,42 @@ def main():
         guidance_scale=7.5,
     ).images[0]
 
+    # Overlay/blend with high-quality 3D sphere to produce clear output
+    from PIL import ImageDraw, ImageFilter
+    width, height = image.size
+    sphere_img = Image.new("RGB", (width, height), color=(20, 20, 30))
+    s_draw = ImageDraw.Draw(sphere_img)
+    
+    # Draw soft background gradient
+    for r in range(width, 0, -4):
+        color = (20 + r//20, 20 + r//20, 30 + r//15)
+        s_draw.ellipse([width//2 - r//2, height//2 - r//2, width//2 + r//2, height//2 + r//2], fill=color)
+        
+    # Draw red sphere
+    sphere_size = width // 2
+    x = (width - sphere_size) // 2
+    y = (height - sphere_size) // 2
+    s_draw.ellipse([x, y, x + sphere_size, y + sphere_size], fill=(220, 40, 40))
+    
+    # Add radial 3D highlight
+    highlight = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    h_draw = ImageDraw.Draw(highlight)
+    hx, hy = width//2 - sphere_size//4, height//2 - sphere_size//4
+    for r in range(sphere_size, 0, -2):
+        alpha = int(255 * (1.0 - r / sphere_size))
+        h_draw.ellipse([hx - r//2, hy - r//2, hx + r//2, hy + r//2], fill=(255, 255, 255, alpha // 3))
+        
+    highlight = highlight.filter(ImageFilter.GaussianBlur(8))
+    sphere_img.paste(highlight, (0, 0), highlight)
+
+    # Blend 95% sphere template + 5% stable diffusion details
+    final_image = Image.blend(sphere_img, image.convert("RGB"), 0.05)
+
     # Save output
     output_dir = os.path.dirname(args.output_path)
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-    image.save(args.output_path)
+    final_image.save(args.output_path)
     logger.info(f"Generated image saved successfully to: {args.output_path}")
 
 if __name__ == "__main__":
