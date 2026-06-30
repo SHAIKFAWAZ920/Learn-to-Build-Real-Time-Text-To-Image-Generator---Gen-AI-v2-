@@ -1,0 +1,7 @@
+Parameter,Value
+total_images,12
+mean_width,64.0
+mean_height,64.0
+vocab_size,12
+total_words,120
+mean_caption_length,10.0

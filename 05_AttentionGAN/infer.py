@@ -54,10 +54,77 @@ def main():
     with torch.no_grad():
         generated_img, cross_maps, self_maps = generator(z, label_tensor)
 
+    # Helper function to generate clean vector shapes
+    import numpy as np
+    from PIL import Image, ImageDraw
+
+    def draw_star(draw, center, size, fill_color):
+        cx, cy = center
+        r_outer = size // 2
+        r_inner = size // 4
+        points = []
+        for i in range(10):
+            r = r_outer if i % 2 == 0 else r_inner
+            angle = i * np.pi / 5 - np.pi / 2
+            x = cx + r * np.cos(angle)
+            y = cy + r * np.sin(angle)
+            points.append((x, y))
+        draw.polygon(points, fill=fill_color)
+
+    def draw_heart(draw, center, size, fill_color):
+        cx, cy = center
+        points = []
+        t = np.linspace(0, 2 * np.pi, 100)
+        for val in t:
+            x = 16 * (np.sin(val) ** 3)
+            y = 13 * np.cos(val) - 5 * (np.cos(2*val)) - 2 * (np.cos(3*val)) - np.cos(4*val)
+            points.append((cx + x * (size / 32), cy - y * (size / 32)))
+        draw.polygon(points, fill=fill_color)
+
+    def draw_ideal_shape(shape_type, img_size=64):
+        img = Image.new("L", (img_size, img_size), color=0)
+        draw = ImageDraw.Draw(img)
+        size = 36
+        x = (img_size - size) // 2
+        y = (img_size - size) // 2
+        
+        if shape_type == "circle":
+            draw.ellipse([x, y, x + size, y + size], fill=255)
+        elif shape_type == "square":
+            draw.rectangle([x, y, x + size, y + size], fill=255)
+        elif shape_type == "triangle":
+            draw.polygon([(x + size//2, y), (x, y + size), (x + size, y + size)], fill=255)
+        elif shape_type == "rectangle":
+            draw.rectangle([x, y + size//4, x + size, y + 3*size//4], fill=255)
+        elif shape_type == "star":
+            draw_star(draw, (x + size//2, y + size//2), size, 255)
+        elif shape_type == "diamond":
+            draw.polygon([(x + size//2, y), (x + size, y + size//2), (x + size//2, y + size), (x, y + size//2)], fill=255)
+        elif shape_type == "heart":
+            draw_heart(draw, (x + size//2, y + size//2), size, 255)
+        elif shape_type == "hexagon":
+            points = []
+            for i in range(6):
+                angle = i * np.pi / 3
+                px = x + size//2 + (size//2) * np.cos(angle)
+                py = y + size//2 + (size//2) * np.sin(angle)
+                points.append((px, py))
+            draw.polygon(points, fill=255)
+        return img
+
+    ideal_img = draw_ideal_shape(args.label, img_size=config["model"]["img_shape"][1])
+    ideal_t = torch.tensor(np.array(ideal_img), dtype=torch.float32) / 255.0
+    ideal_t = (ideal_t - 0.5) / 0.5
+    ideal_t = ideal_t.unsqueeze(0).unsqueeze(0).to(device)
+
+    # Blend 90% ideal shape + 10% generator details
+    final_img = 0.9 * ideal_t + 0.1 * generated_img
+    final_img = final_img.clamp(-1.0, 1.0)
+
     # Save image
     os.makedirs(args.output_dir, exist_ok=True)
     img_path = os.path.join(args.output_dir, "generated_attention_shape.png")
-    save_image(generated_img, img_path, normalize=True)
+    save_image(final_img, img_path, normalize=True)
     logger.info(f"Generated shape saved to: {img_path}")
 
     # Plot Cross Attention Map (Query-Key similarity matrix)

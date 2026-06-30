@@ -1,0 +1,142 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Dataset Explorer Report</title>
+            <style>
+                body { font-family: Arial, sans-serif; margin: 40px; background-color: #f5f5f5; color: #333; }
+                .container { max-width: 1000px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin: auto; }
+                h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; }
+                h2 { color: #16a085; margin-top: 30px; }
+                .metric-card { display: inline-block; background: #ecf0f1; padding: 15px 25px; border-radius: 5px; margin-right: 15px; margin-bottom: 15px; min-width: 150px; text-align: center; }
+                .metric-val { font-size: 24px; font-weight: bold; color: #2980b9; }
+                .plot-img { max-width: 100%; border: 1px solid #ddd; border-radius: 4px; margin-top: 15px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+                th { background-color: #34495e; color: white; }
+                tr:nth-child(even){background-color: #f9f9f9;}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>📊 Dataset Analysis Report</h1>
+                <p>Generated automatically by the AI/ML Dataset Explorer tool.</p>
+                
+                <h2>General Statistics</h2>
+                <div>
+                    <div class="metric-card">
+                        <div>Total Images</div>
+                        <div class="metric-val">12</div>
+                    </div>
+                    <div class="metric-card">
+                        <div>Vocabulary Size</div>
+                        <div class="metric-val">12</div>
+                    </div>
+                    <div class="metric-card">
+                        <div>Mean Image Size</div>
+                        <div class="metric-val">64x64</div>
+                    </div>
+                    <div class="metric-card">
+                        <div>Mean Caption Length</div>
+                        <div class="metric-val">10.00 words</div>
+                    </div>
+                </div>
+
+                <h2>Visual Distributions</h2>
+                <div style="text-align: center;">
+                    <h3>Word Frequency Chart</h3>
+                    <img class="plot-img" src="..\plots/word_frequencies.png" alt="Word Frequency distribution">
+                    
+                    <h3>Caption Length Histogram</h3>
+                    <img class="plot-img" src="..\plots/caption_lengths.png" alt="Caption lengths">
+                </div>
+
+                <h2>Vocabulary Word Frequency Table</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Word</th>
+                            <th>Occurrences</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>1</td>
+                            <td>a</td>
+                            <td>24</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>2</td>
+                            <td>perfect</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>3</td>
+                            <td>drawing</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>4</td>
+                            <td>of</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>5</td>
+                            <td>shape</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>6</td>
+                            <td>in</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>7</td>
+                            <td>high</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>8</td>
+                            <td>quality</td>
+                            <td>12</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>9</td>
+                            <td>circle</td>
+                            <td>3</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>10</td>
+                            <td>square</td>
+                            <td>3</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>11</td>
+                            <td>star</td>
+                            <td>3</td>
+                        </tr>
+                        
+                        <tr>
+                            <td>12</td>
+                            <td>triangle</td>
+                            <td>3</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </body>
+        </html>
+        

@@ -61,26 +61,16 @@ def main():
     text_encoder.requires_grad_(False)
     unet.requires_grad_(False)
 
-    # Inject LoRA into UNet
-    logger.info("Injecting LoRA parameters into UNet attention layers...")
-    lora_attn_procs = {}
-    for name, attn_processor in unet.attn_processors.items():
-        cross_attention_dim = None if name.endswith("attn1.processor") else unet.config.cross_attention_dim
-        if name.startswith("mid_block"):
-            hidden_size = unet.config.block_out_channels[-1]
-        elif name.startswith("up_blocks"):
-            block_id = int(name.split(".")[1])
-            hidden_size = list(reversed(unet.config.block_out_channels))[block_id]
-        elif name.startswith("down_blocks"):
-            block_id = int(name.split(".")[1])
-            hidden_size = unet.config.block_out_channels[block_id]
-        
-        lora_attn_procs[name] = LoRAAttnProcessor(
-            hidden_size=hidden_size,
-            cross_attention_dim=cross_attention_dim,
-            rank=config["training"]["lora_r"],
-        )
-    unet.set_attn_processor(lora_attn_procs)
+    # Inject LoRA into UNet using PEFT
+    logger.info("Injecting LoRA parameters into UNet attention layers using PEFT...")
+    from peft import LoraConfig
+    unet_lora_config = LoraConfig(
+        r=config["training"]["lora_r"],
+        lora_alpha=config["training"]["lora_alpha"],
+        init_lora_weights="gaussian",
+        target_modules=["to_q", "to_k", "to_v", "to_out.0"],
+    )
+    unet.add_adapter(unet_lora_config)
     
     # Extract LoRA parameters to optimize
     lora_layers = filter(lambda p: p.requires_grad, unet.parameters())

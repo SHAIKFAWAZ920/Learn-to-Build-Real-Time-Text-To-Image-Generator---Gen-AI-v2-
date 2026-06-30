@@ -7,5 +7,5 @@ analysis:
   max_vocab_words: 20
 
 outputs:
-  reports_dir: "reports"
-  plots_dir: "plots"
+  reports_dir: "outputs/reports"
+  plots_dir: "outputs/plots"

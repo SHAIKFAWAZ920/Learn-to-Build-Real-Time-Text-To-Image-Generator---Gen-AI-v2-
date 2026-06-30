@@ -10,4 +10,4 @@ api:
   port: 8000
 
 embeddings:
-  output_dir: "embeddings"
+  output_dir: "outputs"
