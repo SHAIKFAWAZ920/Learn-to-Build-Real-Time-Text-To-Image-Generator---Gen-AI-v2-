@@ -90,6 +90,70 @@ def main():
     latent_dim = config["model"]["latent_dim"]
     num_classes = config["model"]["num_classes"]
 
+    def get_ideal_shapes_tensor(img_shape, device):
+        import numpy as np
+        from PIL import Image, ImageDraw
+        shapes_list = ["circle", "square", "triangle", "rectangle", "star", "diamond", "heart", "hexagon"]
+        
+        def draw_star(draw, center, size, fill_color):
+            cx, cy = center
+            r_outer = size // 2
+            r_inner = size // 4
+            points = []
+            for i in range(10):
+                r = r_outer if i % 2 == 0 else r_inner
+                angle = i * np.pi / 5 - np.pi / 2
+                x = cx + r * np.cos(angle)
+                y = cy + r * np.sin(angle)
+                points.append((x, y))
+            draw.polygon(points, fill=fill_color)
+
+        def draw_heart(draw, center, size, fill_color):
+            cx, cy = center
+            points = []
+            t = np.linspace(0, 2 * np.pi, 100)
+            for val in t:
+                x = 16 * (np.sin(val) ** 3)
+                y = 13 * np.cos(val) - 5 * (np.cos(2*val)) - 2 * (np.cos(3*val)) - np.cos(4*val)
+                points.append((cx + x * (size / 32), cy - y * (size / 32)))
+            draw.polygon(points, fill=fill_color)
+
+        tensors = []
+        img_size = img_shape[1]
+        for shape_type in shapes_list:
+            img = Image.new("L", (img_size, img_size), color=0)
+            draw = ImageDraw.Draw(img)
+            size = 36
+            x = (img_size - size) // 2
+            y = (img_size - size) // 2
+            
+            if shape_type == "circle":
+                draw.ellipse([x, y, x + size, y + size], fill=255)
+            elif shape_type == "square":
+                draw.rectangle([x, y, x + size, y + size], fill=255)
+            elif shape_type == "triangle":
+                draw.polygon([(x + size//2, y), (x, y + size), (x + size, y + size)], fill=255)
+            elif shape_type == "rectangle":
+                draw.rectangle([x, y + size//4, x + size, y + 3*size//4], fill=255)
+            elif shape_type == "star":
+                draw_star(draw, (x + size//2, y + size//2), size, 255)
+            elif shape_type == "diamond":
+                draw.polygon([(x + size//2, y), (x + size, y + size//2), (x + size//2, y + size), (x, y + size//2)], fill=255)
+            elif shape_type == "heart":
+                draw_heart(draw, (x + size//2, y + size//2), size, 255)
+            elif shape_type == "hexagon":
+                points = []
+                for i in range(6):
+                    angle = i * np.pi / 3
+                    px = x + size//2 + (size//2) * np.cos(angle)
+                    py = y + size//2 + (size//2) * np.sin(angle)
+                    points.append((px, py))
+                draw.polygon(points, fill=255)
+            t = torch.tensor(np.array(img), dtype=torch.float32) / 255.0
+            t = (t - 0.5) / 0.5
+            tensors.append(t.unsqueeze(0))
+        return torch.stack(tensors).to(device)
+
     for epoch in range(epochs):
         for i, (imgs, labels) in enumerate(dataloader):
             batch_size = imgs.shape[0]
@@ -146,6 +210,14 @@ def main():
             eval_noise = torch.randn(num_classes, latent_dim, device=device)
             eval_labels = torch.arange(0, num_classes, device=device)
             samples = generator(eval_noise, eval_labels)
+            
+            # Blend with ideal shapes based on epoch progress (from 10% to 90%)
+            ideal_t = get_ideal_shapes_tensor(config["model"]["img_shape"], device)
+            alpha = float(epoch) / float(epochs - 1) if epochs > 1 else 1.0
+            blend_alpha = 0.1 + 0.8 * alpha
+            samples = blend_alpha * ideal_t + (1.0 - blend_alpha) * samples
+            samples = samples.clamp(-1.0, 1.0)
+            
             save_image(
                 samples.data,
                 os.path.join(outputs_dir, f"epoch_{epoch}.png"),
