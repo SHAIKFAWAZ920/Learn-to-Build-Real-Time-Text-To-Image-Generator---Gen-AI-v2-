@@ -1,0 +1,11 @@
+dataset:
+  path: "dataset"
+  format: "custom"  # "custom" (images+text), "coco", or "oxford"
+
+analysis:
+  min_word_freq: 1
+  max_vocab_words: 20
+
+outputs:
+  reports_dir: "reports"
+  plots_dir: "plots"

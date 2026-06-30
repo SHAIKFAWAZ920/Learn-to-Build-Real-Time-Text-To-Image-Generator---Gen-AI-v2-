@@ -1,0 +1,8 @@
+# Local gitignore for 04_DatasetExplorer
+__pycache__/
+*.pyc
+reports/
+plots/
+dataset/
+.ipynb_checkpoints/
+.pytest_cache/

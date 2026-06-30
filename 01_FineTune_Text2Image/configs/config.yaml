@@ -1,0 +1,23 @@
+model:
+  pretrained_model_name_or_path: "hf-internal-testing/tiny-stable-diffusion-torch"
+  revision: null
+
+dataset:
+  instance_data_dir: "dataset"
+  instance_prompt: "a photo of a shape"
+  resolution: 64
+
+training:
+  output_dir: "outputs"
+  logging_dir: "logs"
+  learning_rate: 1.0e-4
+  max_train_steps: 10
+  train_batch_size: 2
+  gradient_accumulation_steps: 1
+  mixed_precision: "no"  # "no", "fp16", or "bf16"
+  lora_r: 4
+  lora_alpha: 4
+  lora_dropout: 0.1
+  seed: 42
+  checkpointing_steps: 5
+  resume_from_checkpoint: null  # "latest" or specific checkpoint path

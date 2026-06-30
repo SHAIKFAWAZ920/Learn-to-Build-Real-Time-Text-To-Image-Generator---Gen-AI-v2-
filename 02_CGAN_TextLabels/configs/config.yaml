@@ -1,0 +1,17 @@
+model:
+  latent_dim: 100
+  num_classes: 8
+  img_shape: [1, 64, 64]
+  embedding_dim: 50
+
+training:
+  epochs: 10
+  batch_size: 64
+  lr: 0.0002
+  beta1: 0.5
+  beta2: 0.999
+  dataset_dir: "dataset"
+  outputs_dir: "outputs"
+  checkpoints_dir: "models"
+  logs_dir: "logs"
+  seed: 42

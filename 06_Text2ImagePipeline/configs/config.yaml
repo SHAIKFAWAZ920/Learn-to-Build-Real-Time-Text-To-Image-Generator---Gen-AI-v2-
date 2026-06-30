@@ -1,0 +1,12 @@
+pipeline:
+  default_mode: "attention-gan"  # "attention-gan" or "stable-diffusion"
+  gan_weights: "../05_AttentionGAN/models/generator.pth"
+  sd_model_name: "hf-internal-testing/tiny-stable-diffusion-torch"
+  sd_lora_weights: "../01_FineTune_Text2Image/outputs/checkpoint-10"
+
+api:
+  host: "127.0.0.1"
+  port: 8080
+
+outputs:
+  dir: "outputs"

@@ -1,0 +1,8 @@
+# Local gitignore for 06_Text2ImagePipeline
+__pycache__/
+*.pyc
+logs/
+outputs/
+weights/
+.ipynb_checkpoints/
+.pytest_cache/

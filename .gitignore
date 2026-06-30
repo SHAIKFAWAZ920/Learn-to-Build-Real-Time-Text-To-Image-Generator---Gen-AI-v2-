@@ -1,0 +1,45 @@
+# Python virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache and testing
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Large files, model weights, and datasets
+logs/
+outputs/
+dataset/
+datasets/
+models/
+weights/
+checkpoints/
+*.ckpt
+*.pth
+*.pt
+*.bin
+*.safetensors
+*.h5
+*.onnx
+
+# Archives
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z

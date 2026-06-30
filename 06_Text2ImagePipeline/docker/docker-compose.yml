@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: text2image_api
+    ports:
+      - "8080:8080"
+    environment:
+      - CUDA_VISIBLE_DEVICES=-1
+    volumes:
+      - ../outputs:/app/outputs
+      - ../logs:/app/logs
+
+  ui:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: text2image_ui
+    ports:
+      - "7862:7862"
+    command: python ui/app.py
+    environment:
+      - CUDA_VISIBLE_DEVICES=-1
+    depends_on:
+      - api

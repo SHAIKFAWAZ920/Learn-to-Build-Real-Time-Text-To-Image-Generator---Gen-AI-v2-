@@ -1,0 +1,9 @@
+# Local gitignore for 02_CGAN_TextLabels
+__pycache__/
+*.pyc
+logs/
+outputs/
+dataset/
+models/
+.ipynb_checkpoints/
+.pytest_cache/

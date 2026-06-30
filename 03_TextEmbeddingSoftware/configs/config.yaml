@@ -1,0 +1,13 @@
+model:
+  default_type: "sentence-transformer"  # "bert", "clip", "t5", "sentence-transformer"
+  bert_model_name: "prajjwal1/bert-tiny"
+  clip_model_name: "hf-internal-testing/tiny-random-clip"
+  t5_model_name: "google/t5-efficient-tiny"
+  sentence_transformer_name: "all-MiniLM-L6-v2"
+
+api:
+  host: "127.0.0.1"
+  port: 8000
+
+embeddings:
+  output_dir: "embeddings"

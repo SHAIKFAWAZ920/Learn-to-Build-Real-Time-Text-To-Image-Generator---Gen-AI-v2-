@@ -1,0 +1,9 @@
+# Local gitignore for 01_FineTune_Text2Image
+__pycache__/
+*.pyc
+logs/
+outputs/
+dataset/
+models/
+.ipynb_checkpoints/
+.pytest_cache/

@@ -1,0 +1,8 @@
+# Local gitignore for 03_TextEmbeddingSoftware
+__pycache__/
+*.pyc
+logs/
+embeddings/
+temp_exports/
+.ipynb_checkpoints/
+.pytest_cache/
