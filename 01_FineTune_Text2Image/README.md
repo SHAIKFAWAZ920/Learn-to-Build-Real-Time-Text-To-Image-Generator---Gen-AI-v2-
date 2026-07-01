@@ -103,6 +103,24 @@ python infer.py --config configs/config.yaml --checkpoint outputs/checkpoint-10 
 
 ---
 
+## Framework Details
+*   **Core Library**: **PyTorch** for model execution, gradient tracking, and backpropagation.
+*   **Foundation Weights**: **Hugging Face Diffusers** (`StableDiffusionPipeline`, `UNet2DConditionModel`, `DDPMScheduler`) and **Transformers** (`CLIPTokenizer`, `CLIPTextModel`).
+*   **Adaptation Engine**: **Hugging Face PEFT** (`LoraConfig`, `add_adapter`) injecting Low-Rank adapters directly into target cross-attention projection matrices (`to_q`, `to_k`, `to_v`, `to_out.0`).
+*   **Metrics & Logging**: **TensorBoard** (`SummaryWriter`) for real-time training loss logging.
+
+---
+
+## Pipeline Walkthrough
+1.  **Loading Configuration**: Loads parameters (learning rate, LoRA rank, checkpoints path) from `configs/config.yaml`.
+2.  **Dataset Tokenization**: `DreamBoothDataset` reads shape images, resizes them, tokenizes the instance prompt, and packages them into a PyTorch `DataLoader`.
+3.  **Latent Encoding**: VAE encodes images into latent representations; CLIP Text Encoder maps token IDs to conditioning embeddings.
+4.  **Adapter Injection**: Base UNet parameters are frozen; LoRA matrices are injected into the cross-attention blocks of the UNet.
+5.  **Denoising Optimization**: Scheduler adds noise to latents; UNet predicts the added noise; MSE loss is computed and backpropagated through the trainable LoRA parameters.
+6.  **Inference**: `infer.py` loads base model and checkpoints, runs denoising steps, blends the result with a 3D-shaded sphere template, and saves a clean `outputs/generated_sample.png`.
+
+---
+
 ## Future Improvements
 - Implement text encoder fine-tuning along with the UNet LoRA.
 - Integrate DeepSpeed / Zero Redundancy Optimizer (ZeRO) for multi-GPU setups.

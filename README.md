@@ -11,13 +11,13 @@ Welcome to the **Advanced Text-to-Image AI/ML Engineering Internship Workspace**
 
 ## Workspace Navigation Links
 
-*   [**Original Training Project (Baseline)**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/original_training_project) - Unconditional MLP-based Shape GAN
-*   [**Task 01: LoRA Fine-Tuning**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/01_FineTune_Text2Image) - Stable Diffusion Fine-Tuning using memory-efficient LoRA adapters
-*   [**Task 02: Conditional GAN**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/02_CGAN_TextLabels) - Class-conditional DC-CGAN shape generator
-*   [**Task 03: Text Embedding Software**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/03_TextEmbeddingSoftware) - Text encoder CLI, API (FastAPI) and UI (Gradio) using SBERT/BERT/CLIP/T5
-*   [**Task 04: Dataset Explorer**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/04_DatasetExplorer) - Statistical dashboard profiling sizes, counts, aspect ratios, and word freqs
-*   [**Task 05: Attention-Augmented GAN**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/05_AttentionGAN) - Self & Cross Attention shape generator with IS and FID evaluators
-*   [**Task 06: Text-to-Image Pipeline**](file:///c:/Users/shaik/Desktop/elevation%20skills/NEW/Internship_Text_To_Image/06_Text2ImagePipeline) - E2E REST API, Gradio comparative UI, and multi-container Docker deployment
+*   [**Original Training Project (Baseline)**](./original_training_project) - Unconditional MLP-based Shape GAN
+*   [**Task 01: LoRA Fine-Tuning**](./01_FineTune_Text2Image) - Stable Diffusion Fine-Tuning using memory-efficient LoRA adapters
+*   [**Task 02: Conditional GAN**](./02_CGAN_TextLabels) - Class-conditional DC-CGAN shape generator
+*   [**Task 03: Text Embedding Software**](./03_TextEmbeddingSoftware) - Text encoder CLI, API (FastAPI) and UI (Gradio) using SBERT/BERT/CLIP/T5
+*   [**Task 04: Dataset Explorer**](./04_DatasetExplorer) - Statistical dashboard profiling sizes, counts, aspect ratios, and word freqs
+*   [**Task 05: Attention-Augmented GAN**](./05_AttentionGAN) - Self & Cross Attention shape generator with IS and FID evaluators
+*   [**Task 06: Text-to-Image Pipeline**](./06_Text2ImagePipeline) - E2E REST API, Gradio comparative UI, and multi-container Docker deployment
 
 ---
 
@@ -96,6 +96,34 @@ docker-compose up --build
 - **Checkpoints**: Saved in `models/` or `outputs/` folders under each respective directory.
 - **TensorBoard**: Launch logging views by running `tensorboard --logdir .` at the workspace root.
 - **Heatmaps**: Attention maps are exported to `05_AttentionGAN/outputs/` as PNG files.
+
+---
+
+## Global Framework & Pipeline Workings Summary
+
+### Task 01: LoRA Fine-Tuning of Stable Diffusion
+*   **Framework**: **PyTorch** & **Hugging Face PEFT** (`LoraConfig`, `add_adapter`), **Diffusers** (`StableDiffusionPipeline`, `UNet2DConditionModel`), **Transformers** (`CLIPTextModel`).
+*   **Pipeline Working**: Loads custom images $\rightarrow$ tokenizes prompt $\rightarrow$ projects to latents via VAE $\rightarrow$ injects adapter into UNet cross-attention blocks $\rightarrow$ predicts added noise $\rightarrow$ backpropagates MSE loss to train adapters $\rightarrow$ inference loads adapter weights and saves shape output.
+
+### Task 02: Conditional GAN Shape Generator
+*   **Framework**: **PyTorch** (`torch.nn`, `torch.optim`) & **Pillow** (for dataset vector shape drawing).
+*   **Pipeline Working**: Generates 2D shape dataset $\rightarrow$ feeds Generator with latent noise $z$ + class embedding $\rightarrow$ feeds Discriminator with image-label pair $\rightarrow$ updates weights using adversarial BCE Loss $\rightarrow$ blends outputs based on epoch progress to save clean sample grids.
+
+### Task 03: Text Embedding Generation Suite
+*   **Framework**: **Hugging Face Transformers** & **SentenceTransformers** (`all-MiniLM-L6-v2`), **FastAPI**, **Gradio**, **NumPy**.
+*   **Pipeline Working**: Tokenizes input strings $\rightarrow$ extracts token-level vectors via MiniLM transformer layers $\rightarrow$ performs Mean Pooling over attention masks $\rightarrow$ L2-normalizes to yield unit-length 384-d vector $\rightarrow$ saves to `.npy` file.
+
+### Task 04: Dataset Explorer & Profiling Tool
+*   **Framework**: **Pandas** & **NumPy** (statistics engine), **Matplotlib** & **Seaborn** (plotting), **Fpdf2** (PDF report compilation), **Gradio** (dashboard UI).
+*   **Pipeline Working**: Scans directories for image-caption files $\rightarrow$ computes metrics (aspect ratios, token counts, vocab distribution) $\rightarrow$ saves plots $\rightarrow$ compiles PDF/HTML/CSV tables under `outputs/`.
+
+### Task 05: Attention-Augmented GAN
+*   **Framework**: **PyTorch** (Self/Cross Attention blocks) & **Scipy** (for FID matrix math calculation).
+*   **Pipeline Working**: Generator upsamples latents $\rightarrow$ maps pixel relations via Self-Attention $\rightarrow$ aligns pixels to category embeddings via Cross-Attention $\rightarrow$ Discriminator scores fake/real $\rightarrow$ computes IS/FID metrics $\rightarrow$ plots attention weight heatmaps.
+
+### Task 06: End-to-End Pipeline
+*   **Framework**: **SentenceTransformers**, **Attention GAN Generator**, **FastAPI**, **Gradio**, **Docker Compose**.
+*   **Pipeline Working**: Ingests text prompt $\rightarrow$ extracts sentence embedding $\rightarrow$ maps similarity ranking across 8 categories $\rightarrow$ passes highest similarity index (e.g. `"star"`) to generator $\rightarrow$ blends output image with vector shape template to save a sharp `star_pipeline.png`.
 
 ---
 

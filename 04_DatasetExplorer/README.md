@@ -99,6 +99,24 @@ Open `http://127.0.0.1:7861` to upload directories and view word distributions.
 
 ---
 
+## Framework Details
+*   **Data Analysis**: **Pandas** (for parsing tabular statistics, aggregating metadata, and sorting lists) and **NumPy** (for computing quantitative metrics like mean caption length and sizes).
+*   **Visual Charts**: **Matplotlib** and **Seaborn** (for creating word count distributions, aspect ratio distributions, and scatterplots).
+*   **Report Generation**: **Jinja2** (for dynamic HTML templating) and **Fpdf2** (for compiling multi-page vector PDF documents).
+*   **Web Portal**: **Gradio** for uploading datasets, interactive search, and displaying stats.
+
+---
+
+## Pipeline Walkthrough
+1.  **Scanning Directory**: `DatasetAnalyzer` crawls files in the target directory (supporting custom layouts, COCO JSON folders, or Oxford MAT structures).
+2.  **Stat Extraction**: Pillow extracts image dimensions (width, height, channels, aspect ratio); reads corresponding text files to parse prompt strings.
+3.  **Caption Profiling**: Text is cleaned (punctuation stripped, lowercase converted) to compute word frequencies, token counts, and vocabulary statistics.
+4.  **Chart Generation**: `plotter.py` creates distribution histograms and scatterplots, saving them inside the output directory.
+5.  **Report Export**: `reporter.py` compiles statistics, exports structured CSVs, compiles HTML layouts, and generates a formatted PDF report.
+6.  **Gradio dashboard**: If running `app.py`, the user can browse tables, charts, and image-caption cards on their browser.
+
+---
+
 ## Future Improvements
 - Integrate CLIP-Score calculation to identify semantic alignment quality between images and text.
 - Add an interactive tag editor in the Gradio UI to remove outlier images and update caption text files.

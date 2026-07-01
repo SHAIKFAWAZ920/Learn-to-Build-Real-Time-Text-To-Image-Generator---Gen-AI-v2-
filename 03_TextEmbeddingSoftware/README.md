@@ -101,6 +101,24 @@ python src/benchmark.py
 
 ---
 
+## Framework Details
+*   **NLP & Language Models**: **Hugging Face Transformers** (`AutoTokenizer`, `AutoModel`) and **SentenceTransformers** for tokenizing, loading model weights, and running semantic encoding.
+*   **Core Backend**: **PyTorch** for model execution and forward pass computing.
+*   **Web Frameworks**: **FastAPI** (for high-performance REST API services) and **Gradio** (for interactive web visual UIs).
+*   **Data Structures**: **NumPy** for exporting numerical embedding outputs.
+
+---
+
+## Pipeline Walkthrough
+1.  **Input Ingestion**: Text descriptions (e.g. `"A red circle"`) are provided via CLI, Gradio Web UI, or FastAPI REST payloads.
+2.  **Tokenization**: The input text is tokenized into wordpieces using the pre-trained `all-MiniLM-L6-v2` tokenizer.
+3.  **Encoding forward pass**: Token IDs are passed through the transformer attention layers to extract token-level feature vectors.
+4.  **Mean Pooling**: The token vectors are averaged across the sequence dimension (ignoring pad tokens via attention masks) to yield a unified sentence-level embedding vector of size $384$.
+5.  **Vector L2 Normalization**: The pooled vector is L2-normalized so that its Euclidean length is exactly $1.0$.
+6.  **Saving and Exporting**: Saves vectors to a binary NumPy file (`outputs/test_embeds.npy`), displays embedding similarities, or returns JSON API responses.
+
+---
+
 ## Future Improvements
 - Implement vector database indexing (e.g. FAISS, Milvus) for fast similarity searches.
 - Expose gRPC endpoints for high-throughput, low-latency enterprise environments.

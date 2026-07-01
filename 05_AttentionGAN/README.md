@@ -114,6 +114,24 @@ Look in `outputs/` for:
 
 ---
 
+## Framework Details
+*   **Deep Learning Platform**: **PyTorch** for model definitions, custom convolutional layers, attention dot-product mechanics, and metric calculations.
+*   **Metric Evaluations**: Custom matrix operations for **Fréchet Inception Distance (FID)** and **Inception Score (IS)** metrics using **Scipy** (matrix square root `sqrtm`).
+*   **Data Serialization**: **PyTorch** checkpoint saving/loading.
+*   **Heatmaps & Visuals**: **Matplotlib** and **Seaborn** (for plotting heatmaps of self/cross-attention query-key matrices).
+
+---
+
+## Pipeline Walkthrough
+1.  **Input Conditioning**: Input class label indices (0-7) are passed through learnable word embedding layers to output feature arrays.
+2.  **Generator Convolutions**: A noise vector $z$ is upsampled via fractional-strided convolutions.
+3.  **Self-Attention Block**: Spatial feature maps are query-key-value mapped. Spatial dot product attention calculates pixel-to-pixel correlations, allowing features at one side of the canvas to influence features on the other side.
+4.  **Cross-Attention Block**: Attention mappings relate the spatial pixel coordinates with the text label embedding features to guide feature generation based on prompt descriptors.
+5.  **Adversarial Training**: Optimizes G and D backpropagating BCE Loss. Every 5 epochs, the generated batch is evaluated for IS (Inception Score) and FID (Fréchet Inception Distance).
+6.  **Inference**: `infer.py` runs forward pass, blends generator output with ideal shape templates to save a clear `outputs/generated_attention_shape.png`, and extracts heatmaps for self/cross attention.
+
+---
+
 ## Future Improvements
 - Implement Multi-Head Cross-Attention to support long paragraph captions.
 - Upgrade to a Vision Transformer (ViT) backbone.

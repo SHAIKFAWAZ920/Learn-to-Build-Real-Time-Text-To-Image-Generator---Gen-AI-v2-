@@ -98,6 +98,24 @@ The pipeline translates input text query descriptors into a semantic vector via 
 
 ---
 
+## Framework Details
+*   **Text Embedding Extraction**: **SentenceTransformers** (`all-MiniLM-L6-v2`) for prompt vector mapping.
+*   **Adversarial Convolutions**: Trained **Attention Generator** (from Task 05) or **Stable Diffusion UNet with LoRA PEFT** (from Task 01).
+*   **Core Logic**: **PyTorch** for model inference and **NumPy** for vector cosine similarity comparisons.
+*   **Web Frameworks & Deployments**: **FastAPI** (REST microservice), **Gradio** (interactive UI dashboard), and **Docker Compose** (containerization).
+
+---
+
+## Pipeline Walkthrough
+1.  **Ingestion & Tokenization**: Prompt (e.g. `"A glowing star"`) is received via Gradio UI, FastAPI REST endpoint, or Python CLI.
+2.  **Prompt Embeddings**: Prompt is tokenized and encoded into a $384$-dimensional sentence-level embedding vector.
+3.  **Semantic Similarity Matching**: Cosine similarity is computed between the prompt vector and the 8 pre-computed shape class anchors (circle, square, star, etc.).
+4.  **Category Selection**: The category with the highest cosine similarity (e.g. `"star"`, score: `0.7140`) is selected.
+5.  **Attention GAN Generation**: A random latent noise vector $z$ and matched category index are fed into the trained Attention Generator network to construct the shape.
+6.  **Image Synthesis & Output**: The tensor is post-processed, blended with the clean shape template, saved to `outputs/star_pipeline.png`, and a JSON response is returned.
+
+---
+
 ## Future Improvements
 - Integrate CLIP Score evaluation into the API outputs.
 - Support parallel batch generation using PyTorch `vmap` or multi-threaded pipelines.

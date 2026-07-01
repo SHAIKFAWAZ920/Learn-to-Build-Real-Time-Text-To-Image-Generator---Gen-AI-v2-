@@ -118,6 +118,26 @@ python infer.py --label star --checkpoint models/generator.pth
 
 ---
 
+## Framework Details
+*   **Deep Learning Platform**: **PyTorch** (`torch`, `torch.nn`, `torch.optim`) for tensor computing, network layer definitions, and backpropagation.
+*   **Dataset Helpers**: **torch.utils.data** (`Dataset`, `DataLoader`) for custom shape loading and shuffling.
+*   **Image Operations**: **Torchvision** (`save_image`) and **Pillow (PIL)** for rendering geometric vectors (circle, star, heart) and image conversions.
+*   **Metrics & Logging**: **TensorBoard** (`SummaryWriter`) for tracking generator/discriminator adversarial losses.
+
+---
+
+## Pipeline Walkthrough
+1.  **Dataset Preparation**: `generate_dataset.py` draws grayscale shapes (circles, squares, stars) on black canvases, saving them with labels into the dataset folder.
+2.  **Model Initialization**: Loads generator and discriminator structures; maps class labels into learned embedding layers.
+3.  **Forward Pass**: 
+    *   Generator concatenates random latent noise $z \sim \mathcal{N}(0, I)$ and class embeddings, mapping them to fake $64 \times 64$ images via fractional-strided convolutions.
+    *   Discriminator evaluates real image-label pairs and generated image-label pairs.
+4.  **Adversarial Optimization**: Computes BCE Loss. D is updated to maximize real scores and minimize fake scores; G is updated to minimize $\log(1 - D(G(z|y)))$ (tricking D).
+5.  **Progressive Epoch Evaluation**: Evaluates 8 shape classes at the end of each epoch, blending them with vector shapes progressively (from 10% to 90% detail) to generate convergence grid outputs (`epoch_X.png`).
+6.  **Inference**: `infer.py` feeds the condition class index and latent noise to the trained generator, blending the output with a vector shape template to save a sharp image (`outputs/generated_star.png`).
+
+---
+
 ## Future Improvements
 - Transition to Conditional Wasserstein GAN with Gradient Penalty (WGAN-GP) to resolve mode collapse.
 - Support multi-channel RGB shape generation with complex textured backgrounds.
